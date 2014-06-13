@@ -845,15 +845,28 @@
 
         var res = [];
 
+        var op;
+        if (filter.operators && filter.operators.length > 0) {
+          for (var i= 0, l=filter.operators.length; i<l; i++) {
+            op = filter.operators[i];
+            for (var j= 0, k=this.operators.length; j<k; j++) {
+              if (this.operators[j].type == op && this.operators[j].apply_to.indexOf(filter.internalType) > -1) {
+                res.push({
+                  type: op,
+                  label: this.lang['operator_'+op]
+                });
+                continue;
+              }
+            }
+          }
+        }
+
+        if (res.length > 0)
+          return res;
+
         for (var i=0, l=this.operators.length; i<l; i++) {
             if (this.operators[i].apply_to.indexOf(filter.internalType) == -1) {
                 continue;
-            }
-
-            if (filter.operators) {
-                if (filter.operators.indexOf(this.operators[i].type) == -1) {
-                    continue;
-                }
             }
 
             res.push({
