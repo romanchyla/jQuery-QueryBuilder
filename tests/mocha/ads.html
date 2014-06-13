@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script src="../../bower_components/mocha/mocha.js"></script>
+    <script src="../../bower_components/chai/chai.js"></script>
+    <script src="../../bower_components/sinon/index.js"></script>
+    <script src="../../bower_components/lodash/dist/lodash.compat.js"></script>
+
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../dist/query-builder.min.css">
+
+    <!-- Setup the testing frameworks -->
+    <script>
+        // Chai
+        //var should = chai.should();
+
+        /*globals mocha, expect, chai, sinon */
+        mocha.setup('bdd');
+        mocha.bail(false);
+        var expect = chai.expect,
+                assert = chai.assert,
+                should = chai.should;
+
+    </script>
+
+
+</head>
+
+<body>
+
+<div class="container">
+    <div class="col-md-12 col-lg-10 col-lg-offset-1">
+        <div id="builder"></div>
+
+        <div class="btn-group">
+            <button class="btn btn-warning" id="reset">Reset</button>
+            <button class="btn btn-success" id="set">Set rules</button>
+            <button class="btn btn-primary" id="parse">Parse</button>
+        </div>
+
+        <div id="result" class="hide">
+            <h3>Output</h3>
+            <pre></pre>
+        </div>
+    </div>
+</div>
+
+<div id="mocha"></div>
+
+<script src="../../bower_components/jquery/dist/jquery.js"></script>
+<script src="../../src/query-builder.js"></script>
+
+<script>
+    $('#builder').queryBuilder.defaults.set({
+        lang: {
+            "operator_equal": "is exactly",
+            "operator_in": "is",
+            "operator_not_in": "is not",
+            "operator_begins_with": "starts with",
+            "operator_not_begins_with": "doesn't start with",
+            "operator_contains": "contains",
+            "operator_not_contains": "doesn't contain",
+            "operator_is_not_empty": "is not empty"
+        }
+    })
+    // define filters
+    $('#builder').queryBuilder({
+        sortable: true,
+
+        filters: [
+            {id: 'author', label: 'Author', type: 'string', placeholder: 'Planck, Max',
+                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly', 'is_not_empty']},
+            {id: '^author', label: 'First Author', type: 'string', placeholder: 'Einstein, A',
+                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly']},
+            {id: 'title', label: 'Title', type: 'string',
+                operators: ['contains', 'in', 'not_in', 'is_exactly', 'is_not_empty']},
+            {id: 'abstract', label: 'Abstract', type: 'string',
+                operators: ['contains', 'in', 'not_in', 'is_not_empty']},
+            {id: 'keyword', label: 'Keyword', type: 'string',
+                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly', 'is_not_empty']},
+            {id: 'full', label: 'Fulltext', type: 'string',
+                operators: ['contains', 'in', 'not_in', 'is_not_empty']},
+            {id: 'function', label: 'Function', type: 'string',
+                operators: ['pos', 'references', 'citations', 'instructive', 'trending']}
+            ]
+    });
+
+    // set rules
+    $('#set').on('click', function() {
+        $('#builder').queryBuilder('setRules', {
+            condition: 'AND',
+            rules: [{
+                id: 'author',
+                operator: 'in',
+                value: 'Roman'
+            }, {
+                condition: 'OR',
+                rules: [{
+                    id: 'title',
+                    operator: 'contains',
+                    value: 'galaxy'
+                }, {
+                    id: 'abstract',
+                    operator: 'contains',
+                    value: '42'
+                }]
+            }]
+        });
+
+        $('#parse').trigger('click');
+    })
+            .trigger('click');
+
+    // reset builder
+    $('#reset').on('click', function() {
+        $('#builder').queryBuilder('reset');
+        $('#result').empty().addClass('hide');
+    });
+
+    // get rules
+    $('#parse').on('click', function() {
+        $('#result').removeClass('hide')
+                .find('pre').html(JSON.stringify(
+                        $('#builder').queryBuilder('getRules'),
+                        undefined, 2
+                ));
+    });
+</script>
+
+<script>
+    // Run test on command line or in browser
+    (window.mochaPhantomJS || mocha).run();
+</script>
+
+</body>
+</html>
