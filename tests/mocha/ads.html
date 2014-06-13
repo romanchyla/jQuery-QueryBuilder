@@ -55,33 +55,60 @@
 <script>
     $('#builder').queryBuilder.defaults.set({
         lang: {
-            "operator_equal": "is exactly",
-            "operator_in": "is",
-            "operator_not_in": "is not",
-            "operator_begins_with": "starts with",
-            "operator_not_begins_with": "doesn't start with",
-            "operator_contains": "contains",
-            "operator_not_contains": "doesn't contain",
+            "operator_is_exactly": "is exactly",
+            "operator_is": "is",
+            "operator_is_not": "is not",
+            "operator_starts_with": "starts with",
+            "operator_starts_not_with": "doesn't start with",
+            "operator_contains": "contains word(s)",
+            "operator_contains_not": "doesn't contain word(s)",
+            "operator_contains_phrase": "contains phrase",
+            "operator_contains_not_phrase": "doesn't have phrase",
             "operator_is_not_empty": "is not empty"
-        }
-    })
+        },
+        operators: [
+            {type: 'is',               accept_values: true,  apply_to: ['string', 'number', 'datetime']},
+            {type: 'is_exactly',       accept_values: true,  apply_to: ['string', 'number', 'datetime']},
+            {type: 'is_not',           accept_values: true,  apply_to: ['string', 'number', 'datetime']},
+            {type: 'less',             accept_values: true,  apply_to: ['number', 'datetime']},
+            {type: 'less_or_equal',    accept_values: true,  apply_to: ['number', 'datetime']},
+            {type: 'greater',          accept_values: true,  apply_to: ['number', 'datetime']},
+            {type: 'greater_or_equal', accept_values: true,  apply_to: ['number', 'datetime']},
+            {type: 'starts_with',      accept_values: true,  apply_to: ['string']},
+            {type: 'starts_not_with',  accept_values: true,  apply_to: ['string']},
+            {type: 'contains',         accept_values: true,  apply_to: ['string']},
+            {type: 'contains_not',     accept_values: true,  apply_to: ['string']},
+            {type: 'contains_phrase',  accept_values: true,  apply_to: ['string']},
+            {type: 'contains_not_phrase', accept_values: true,  apply_to: ['string']},
+            {type: 'is_not_empty',     accept_values: false, apply_to: ['string']},
+
+            {type: 'is_not_empty',     accept_values: false, apply_to: ['string']},
+            {type: 'is_not_empty',     accept_values: false, apply_to: ['string']},
+            {type: 'is_not_empty',     accept_values: false, apply_to: ['string']},
+
+        ]
+    });
+
+    var singleTokenOperators = ['is', 'starts_with', 'is_exactly', 'is_not', 'starts_not_with', 'is_not_empty'];
+    var multiTokenOperators = ['contains', 'contains_phrase', 'contains_not', 'contains_not_phrase', 'is_not_empty'];
+
     // define filters
     $('#builder').queryBuilder({
         sortable: true,
 
         filters: [
             {id: 'author', label: 'Author', type: 'string', placeholder: 'Planck, Max',
-                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly', 'is_not_empty']},
+                operators: singleTokenOperators},
             {id: '^author', label: 'First Author', type: 'string', placeholder: 'Einstein, A',
-                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly']},
+                operators: singleTokenOperators},
             {id: 'title', label: 'Title', type: 'string',
-                operators: ['contains', 'in', 'not_in', 'is_exactly', 'is_not_empty']},
+                operators: multiTokenOperators},
             {id: 'abstract', label: 'Abstract', type: 'string',
-                operators: ['contains', 'in', 'not_in', 'is_not_empty']},
+                operators: multiTokenOperators},
             {id: 'keyword', label: 'Keyword', type: 'string',
-                operators: ['in', 'not_in', 'begins_with', 'not_begins_with', 'is_exactly', 'is_not_empty']},
+                operators: singleTokenOperators},
             {id: 'full', label: 'Fulltext', type: 'string',
-                operators: ['contains', 'in', 'not_in', 'is_not_empty']},
+                operators: multiTokenOperators},
             {id: 'function', label: 'Function', type: 'string',
                 operators: ['pos', 'references', 'citations', 'instructive', 'trending']}
             ]
@@ -93,7 +120,7 @@
             condition: 'AND',
             rules: [{
                 id: 'author',
-                operator: 'in',
+                operator: 'is',
                 value: 'Roman'
             }, {
                 condition: 'OR',

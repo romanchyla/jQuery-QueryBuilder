@@ -855,7 +855,7 @@
                   type: op,
                   label: this.lang['operator_'+op]
                 });
-                continue;
+                break;
               }
             }
           }
