@@ -42,8 +42,9 @@
 
         <div id="result" class="hide">
             <h3>Output</h3>
-            <pre></pre>
+            <textarea rows="50" cols="120"></textarea>
         </div>
+
     </div>
 </div>
 
@@ -175,8 +176,20 @@
             ]
     });
 
+    $('#builder').on('change.queryBuilder', function(ev) {
+        console.log('change', ev);
+    });
+    $('#builder').on('click.queryBuilder', function(ev) {
+        console.log('click', ev);
+    });
+
     // set rules
     $('#set').on('click', function() {
+        if ($('#result textarea').val().trim().length > 0) {
+            $('#builder').queryBuilder('setRules', JSON.parse($('#result textarea').val()));
+            return;
+        }
+
         $('#builder').queryBuilder('setRules', {
             condition: 'AND',
             rules: [{
@@ -210,9 +223,9 @@
     // get rules
     $('#parse').on('click', function() {
         $('#result').removeClass('hide')
-                .find('pre').html(JSON.stringify(
+                .find('textarea').val(JSON.stringify(
                         $('#builder').queryBuilder('getRules'),
-                        undefined, 2
+                        undefined, 4
                 ));
     });
 </script>

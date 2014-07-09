@@ -2,6 +2,9 @@
  * jQuery QueryBuilder
  * Copyright 2014 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
+ *
+ * Enhanced, fixed and tested by rca, while at Harvard Center for Astrophysics (ADSLabs),
+ * 2014 - https://github.com/romanchyla/jQuery-QueryBuilder
  */
  /*
   * Dependencies :
@@ -130,6 +133,9 @@
         onValidationError: null,
         onAfterAddGroup: null,
         onAfterAddRule: null,
+
+        conditions: ['AND', 'OR'],
+        default_condition: 'AND',
 
         sortable: false,
         filters: [],
@@ -315,11 +321,14 @@
                 $buttons = $group.find('>dt input[name$=_cond]');
 
             if (!data.condition) {
-                data.condition = 'AND';
+                data.condition = this.settings.default_condition;
             }
 
-            $buttons.filter('[value=AND]').prop('checked', data.condition.toUpperCase() == 'AND');
-            $buttons.filter('[value=OR]').prop('checked', data.condition.toUpperCase() == 'OR');
+            var l = that.settings.conditions.length, cond;
+            for (var i=0; i < l; i++) {
+              cond = that.settings.conditions[i];
+              $buttons.filter('[value=' + cond + ']').prop('checked', data.condition.toUpperCase() == cond);
+            }
             $buttons.trigger('change');
 
             $.each(data.rules, function(i, rule) {
@@ -978,6 +987,15 @@
      * @return {string}
      */
     QueryBuilder.prototype.getGroupTemplate = function(group_id) {
+
+      var conditions = [];
+      var l = this.settings.conditions.length, cond;
+      for (var i=0; i < l; i++) {
+        cond = this.settings.conditions[i];
+        conditions.push('<label class="btn btn-xs btn-primary ' + (this.settings.default_condition == cond ? 'active' : '') + '"><input type="radio" name="'+ group_id +'_cond" value="' + cond + '"' + (this.settings.default_condition == cond ? 'checked' : '') + '>'+ (this.lang[cond.toLowerCase() + '_condition'] || cond) +'</label>');
+      }
+      conditions = conditions.join('\n');
+
         return '\
 <dl id='+ group_id +' class="rules-group-container" '+ (this.settings.sortable ? 'draggable="true"' : '') +'> \
   <dt class="rules-group-header"> \
@@ -987,8 +1005,7 @@
       <button type="button" class="btn btn-xs btn-danger" data-delete="group"><i class="glyphicon glyphicon-remove"></i> '+ this.lang.delete_group +'</button> \
     </div> \
     <div class="btn-group"> \
-      <label class="btn btn-xs btn-primary active"><input type="radio" name="'+ group_id +'_cond" value="AND" checked> '+ this.lang.and_condition +'</label> \
-      <label class="btn btn-xs btn-primary"><input type="radio" name="'+ group_id +'_cond" value="OR"> '+ this.lang.or_condition +'</label> \
+      ' + conditions + '\
     </div> \
     '+ (this.settings.sortable ? '<div class="drag-handle"><i class="glyphicon glyphicon-sort"></i></div>' : '') +' \
   </dt> \

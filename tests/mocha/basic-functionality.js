@@ -58,4 +58,37 @@ describe("QueryBuilder (Basic API)", function () {
     expect(vals).to.eql(['not_equal', 'contains', 'equal']);
   });
 
+  it("allows to change conditions", function() {
+    $('#builder').queryBuilder('destroy');
+    $('#builder').queryBuilder({
+      conditions: ['AND', 'OR', 'DEFOP'],
+      filters:[
+      {
+        id: 'name',
+        label: 'Name',
+        type: 'string',
+        operators: ['not_equal', 'contains', 'equal']
+      }
+    ]
+    });
+
+    $('#builder').queryBuilder('setRules', {
+      "condition": "DEFOP",
+      "rules": [
+        {
+          "id": "name",
+          "field": "name",
+          "type": "string",
+          "input": "text",
+          "operator": "equal",
+          "value": "x"
+        }
+      ]
+    });
+
+    var vals = _.map($.find('label.btn-primary'), function(x) {return $(x).text()});
+    expect(vals).to.eql(['AND', 'OR', 'DEFOP']);
+    expect($('#builder').find('label.btn-primary.active').text()).to.be.eql('DEFOP');
+  });
+
 });
