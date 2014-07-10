@@ -321,7 +321,7 @@
                 $buttons = $group.find('>dt input[name$=_cond]');
 
             if (!data.condition) {
-                data.condition = this.settings.default_condition;
+                data.condition = that.settings.default_condition;
             }
 
             var l = that.settings.conditions.length, cond;
