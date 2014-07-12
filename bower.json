@@ -9,8 +9,8 @@
   "main": [
     "dist/query-builder.min.js",
     "dist/query-builder.min.css",
-	"src/query-builder.js",
-	"src/query-builder.css"
+  	"src/query-builder.js",
+	  "src/query-builder.css"
   ],
   "dependencies" : {
     "jquery": ">= 1.9.0",

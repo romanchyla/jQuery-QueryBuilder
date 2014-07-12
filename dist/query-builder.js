@@ -1,12 +1,8 @@
 /*!
- * jQuery QueryBuilder
+ * jQuery QueryBuilder 1.1.0
  * Copyright 2014 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
- *
- * Enhanced, fixed and tested by rca, while at Harvard Center for Astrophysics (ADSLabs),
- * 2014 - https://github.com/romanchyla/jQuery-QueryBuilder
  */
-
 /*jshint multistr:true */
 
 (function($){
@@ -140,9 +136,6 @@
         onValidationError: null,
         onAfterAddGroup: null,
         onAfterAddRule: null,
-
-        conditions: ['AND', 'OR'],
-        default_condition: 'AND',
 
         sortable: false,
         filters: [],
@@ -334,14 +327,11 @@
                 $buttons = $group.find('>.rules-group-header input[name$=_cond]');
 
             if (!data.condition) {
-                data.condition = that.settings.default_condition;
+                data.condition = 'AND';
             }
 
-            var l = that.settings.conditions.length, cond;
-            for (var i=0; i < l; i++) {
-              cond = that.settings.conditions[i];
-              $buttons.filter('[value=' + cond + ']').prop('checked', data.condition.toUpperCase() == cond);
-            }
+            $buttons.filter('[value=AND]').prop('checked', data.condition.toUpperCase() == 'AND');
+            $buttons.filter('[value=OR]').prop('checked', data.condition.toUpperCase() == 'OR');
             $buttons.trigger('change');
 
             $.each(data.rules, function(i, rule) {
@@ -867,28 +857,15 @@
 
         var res = [];
 
-        var op;
-        if (filter.operators && filter.operators.length > 0) {
-          for (var i= 0, l=filter.operators.length; i<l; i++) {
-            op = filter.operators[i];
-            for (var j= 0, k=this.operators.length; j<k; j++) {
-              if (this.operators[j].type == op && this.operators[j].apply_to.indexOf(filter.internalType) > -1) {
-                res.push({
-                  type: op,
-                  label: this.lang['operator_'+op]
-                });
-                break;
-              }
-            }
-          }
-        }
-
-        if (res.length > 0)
-          return res;
-
         for (var i=0, l=this.operators.length; i<l; i++) {
             if (this.operators[i].apply_to.indexOf(filter.internalType) == -1) {
                 continue;
+            }
+
+            if (filter.operators) {
+                if (filter.operators.indexOf(this.operators[i].type) == -1) {
+                    continue;
+                }
             }
 
             res.push({
@@ -1007,15 +984,6 @@
      * @return {string}
      */
     QueryBuilder.prototype.getGroupTemplate = function(group_id) {
-
-      var conditions = [];
-      var l = this.settings.conditions.length, cond;
-      for (var i=0; i < l; i++) {
-        cond = this.settings.conditions[i];
-        conditions.push('<label class="btn btn-xs btn-primary ' + (this.settings.default_condition == cond ? 'active' : '') + '"><input type="radio" name="'+ group_id +'_cond" value="' + cond + '"' + (this.settings.default_condition == cond ? 'checked' : '') + '>'+ (this.lang[cond.toLowerCase() + '_condition'] || cond) +'</label>');
-      }
-      conditions = conditions.join('\n');
-
         var h = '\
 <dl id="'+ group_id +'" class="rules-group-container" '+ (this.settings.sortable ? 'draggable="true"' : '') +'> \
   <dt class="rules-group-header"> \
@@ -1025,7 +993,8 @@
       <button type="button" class="btn btn-xs btn-danger" data-delete="group"><i class="glyphicon glyphicon-remove"></i> '+ this.lang.delete_group +'</button> \
     </div> \
     <div class="btn-group"> \
-      ' + conditions + '\
+      <label class="btn btn-xs btn-primary active"><input type="radio" name="'+ group_id +'_cond" value="AND" checked> '+ this.lang.and_condition +'</label> \
+      <label class="btn btn-xs btn-primary"><input type="radio" name="'+ group_id +'_cond" value="OR"> '+ this.lang.or_condition +'</label> \
     </div> \
     '+ (this.settings.sortable ? '<div class="drag-handle"><i class="glyphicon glyphicon-sort"></i></div>' : '') +' \
   </dt> \
@@ -1159,7 +1128,7 @@
     // ===============================
     $.fn.queryBuilder = function(option) {
         if (this.length > 1) {
-            $.error('Unable to initialize multiple instances on the same target');
+            $.error('Unable to initialize on multiple target');
         }
 
         var data = this.data('queryBuilder'),
