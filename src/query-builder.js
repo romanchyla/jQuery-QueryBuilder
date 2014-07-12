@@ -365,7 +365,17 @@
                         $value = $rule.find('.rule-value-container');
 
                     $rule.find('.rule-filter-container select[name$=_filter]').val(rule.id).trigger('change');
-                    $rule.find('.rule-operator-container select[name$=_operator]').val(rule.operator).trigger('change');
+
+                    var $operator = $rule.find('.rule-operator-container select[name$=_operator]');
+                    if ($operator.children('option[value="' + rule.operator + '"]').length == 0) {
+                      if (filter.createOperatorIfNecessary) {
+                        $operator.append($('<option value="' + rule.operator + '">' + (that.lang['operator_' + rule.operator] || rule.operator) + '</option>'));
+                      }
+                      else {
+                        throw 'Unknown operator: ' + rule.operator;
+                      }
+                    }
+                    $operator.val(rule.operator).trigger('change');
 
                     if (operator.accept_values) {
                       switch (filter.input) {
