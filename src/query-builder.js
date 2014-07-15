@@ -35,6 +35,12 @@
     var QueryBuilder = function($el, options) {
         var that = this;
 
+
+        if ('extend' in options) {
+          $.extend(this, options.extend);
+          delete options['extend'];
+        }
+
         // global variables
         this.$el = $el;
         this.settings = $.extend(true, {}, QueryBuilder.DEFAULTS, options);
@@ -1060,7 +1066,7 @@
         var h = '\
 <li id="'+ rule_id +'" class="rule-container" '+ (this.settings.sortable ? 'draggable="true"' : '') +'> \
   <div class="rule-header"> \
-    <div class="btn-group pull-left"> \
+    <div class="btn-group pull-right"> \
       <button type="button" class="btn btn-xs btn-danger" data-delete="rule"><i class="glyphicon glyphicon-remove"></i> '+ this.lang.delete_rule +'</button> \
     </div> \
   </div> \
