@@ -1,6 +1,4 @@
 module.exports = function(grunt) {
-    var lang = grunt.option('lang') || 'en';
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -10,26 +8,6 @@ module.exports = function(grunt) {
             ' * Copyright <%= grunt.template.today("yyyy") %> Damien "Mistic" Sorel (http://www.strangeplanet.fr)\n'+
             ' * Licensed under MIT (http://opensource.org/licenses/MIT)\n'+
             ' */',
-
-        // compress js
-        uglify: {
-            options: {
-                banner: '<%= banner %>\n'
-            },
-            nolang: {
-                files: {
-                    'dist/query-builder.min.js': ['src/query-builder.js']
-                }
-            },
-            lang: {
-                files: {
-                    'dist/query-builder.min.js': [
-                        'src/query-builder.js',
-                        'src/i18n/'+ lang +'.js'
-                    ]
-                }
-            }
-        },
 
         // copy i18n
         copy: {
@@ -43,6 +21,40 @@ module.exports = function(grunt) {
             }
         },
 
+        // copy src
+        concat: {
+            options: {
+                banner: '<%= banner %>\n',
+                stripBanners: {
+                    block: true
+                }
+            },
+            src: {
+                files: {
+                    'dist/query-builder.css': [
+                        'src/query-builder.css'
+                    ],
+                    'dist/query-builder.js': [
+                        'src/query-builder.js'
+                    ]
+                }
+            }
+        },
+
+        // compress js
+        uglify: {
+            options: {
+                banner: '<%= banner %>\n'
+            },
+            dist: {
+                files: {
+                    'dist/query-builder.min.js': [
+                        'dist/query-builder.js'
+                    ]
+                }
+            }
+        },
+
         // compress css
         cssmin: {
             options: {
@@ -52,25 +64,45 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     'dist/query-builder.min.css': [
-                        'src/query-builder.css'
+                        'dist/query-builder.css'
                     ]
                 }
             }
+        },
+
+        // jshint tests
+        jshint: {
+            lib: {
+                files: {
+                    src: [
+                        'src/query-builder.js'
+                    ]
+                }
+            }
+        },
+
+        // qunit test suite
+        qunit: {
+            all: ['tests/*.html']
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     grunt.registerTask('default', [
-        'uglify:nolang',
         'copy',
+        'concat',
+        'uglify',
         'cssmin'
     ]);
-
-    grunt.registerTask('onelang', [
-        'uglify:lang',
-        'cssmin'
+    
+    grunt.registerTask('test', [
+        'qunit',
+        'jshint'
     ]);
 };

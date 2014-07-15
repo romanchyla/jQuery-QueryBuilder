@@ -91,4 +91,37 @@ describe("QueryBuilder (Basic API)", function () {
     expect($('#builder').find('label.btn-primary.active').text()).to.be.eql('DEFOP');
   });
 
+  it("allows to insert non-existing operator", function() {
+    $('#builder').queryBuilder('destroy');
+    $('#builder').queryBuilder({
+      filters:[
+        {
+          id: 'name',
+          label: 'Name',
+          type: 'string',
+          operators: ['not_equal', 'contains', 'equal'],
+          createOperatorIfNecessary: true
+        }
+      ]
+    });
+
+    $('#builder').queryBuilder('setRules', {
+      "condition": "DEFOP",
+      "rules": [
+        {
+          "id": "name",
+          "field": "name",
+          "type": "string",
+          "input": "text",
+          "operator": "in",
+          "value": "x"
+        }
+      ]
+    });
+
+    var vals = _.map($.find('.rule-operator-container option'), function(x) {return $(x).val()});
+    expect(vals).to.eql(["not_equal", "contains", "equal", "in"]);
+    expect($($.find('.rule-operator-container select')).val()).to.be.eql('in');
+  });
+
 });

@@ -6,15 +6,16 @@
     "homepage": "http://www.strangeplanet.fr"
   },
   "description": "jQuery plugin for user friendly query/filter creator",
-  "main": [
-    "dist/query-builder.min.js",
-    "dist/query-builder.min.css"
-  ],
+  "main": "dist/query-builder.js",
   "devDependencies": {
+    "qunitjs": "~1.14.0",
     "grunt": "~0.4.5",
+    "grunt-contrib-qunit": "~0.5.1",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-cssmin": "~0.9.0",
-    "grunt-contrib-copy": "~0.5.0"
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-jshint": "~0.10.0"
   },
   "keywords": [
     "jquery",
@@ -32,6 +33,6 @@
     "url": "https://github.com/mistic100/jQuery-QueryBuilder/issues"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test --force"
   }
 }
