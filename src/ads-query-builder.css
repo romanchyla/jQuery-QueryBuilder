@@ -19,7 +19,7 @@
 /* GROUPS */
 .rules-group-container {
   //padding:10px 10px 5px 10px;
-  border:1px solid #66afe9;
+  border:1px dashed #66afe9;
   //background:#FCF9ED;
   //background:rgba(250, 240, 210, 0.5);
 }
@@ -137,4 +137,7 @@
     color: #5cb85c;
     background-color: white;
     border-color: white;
+}
+div.query-builder > .rules-group-container {
+    border:1px solid white;
 }
