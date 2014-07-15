@@ -320,6 +320,10 @@
                 $ul = $group.find('>dd>ul'),
                 $buttons = $group.find('>dt input[name$=_cond]');
 
+            if (!data.rules) {
+              throw new Error("Missing data.rules element");
+            }
+
             if (!data.condition) {
                 data.condition = that.settings.default_condition;
             }
@@ -1024,7 +1028,7 @@
         return '\
 <li id='+ rule_id +' class="rule-container" '+ (this.settings.sortable ? 'draggable="true"' : '') +'> \
   <div class="rule-header"> \
-    <div class="btn-group pull-right"> \
+    <div class="btn-group pull-left"> \
       <button type="button" class="btn btn-xs btn-danger" data-delete="rule"><i class="glyphicon glyphicon-remove"></i> '+ this.lang.delete_rule +'</button> \
     </div> \
   </div> \

@@ -9,7 +9,7 @@
     <script src="../../bower_components/lodash/dist/lodash.compat.js"></script>
 
     <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../dist/query-builder.min.css">
+    <link rel="stylesheet" href="../../src/ads-query-builder.css">
 
     <!-- Setup the testing frameworks -->
     <script>
@@ -71,7 +71,12 @@
             "operator_f_citations": "Get Citations",
             "operator_f_references": "Get References",
             "operator_f_trending": "Find Trending Papers",
-            "operator_f_instructive": "Find Instructive Papers"
+            "operator_f_instructive": "Find Instructive Papers",
+
+            delete_rule: ' ',
+            delete_group: '',
+            add_rule: ' ',
+            add_group: ' '
 
         },
         operators: [
@@ -105,7 +110,7 @@
 
     // define filters
     $('#builder').queryBuilder({
-        sortable: true,
+        sortable: false,
 
         filters: [
             {id: 'author', label: 'Author', type: 'string', placeholder: 'Planck, Max',
