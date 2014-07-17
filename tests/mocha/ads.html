@@ -108,6 +108,28 @@
     var multiTokenOperators = ['contains', 'contains_phrase', 'contains_not', 'contains_not_phrase', 'is_not_empty'];
     var functionOperators = ['is', 'is_not'];
 
+
+    var createFunctionInputs = function(builder, profiles) {
+        var $target, values, $current, $container;
+        $container = $('<span/>');
+        var $target = $(builder.getRuleInput(profiles[0].id, profiles[0]));
+        $target.addClass('hide');
+        values = [];
+
+        for (var i=1; i<profiles.length; i++) {
+            $current = $(builder.getRuleInput(profiles[i].id, profiles[i]));
+            $current.attr('index', i-1);
+            $current.change(function() {
+                values[parseInt($(this).attr('index')) || '0'] = $(this).val();
+                $target.val(values.join('|'));
+            });
+            $container.append($current);
+            values.push('');
+        }
+        $container.append($target);
+        return $container;
+    };
+
     // define filters
     $('#builder').queryBuilder({
         extend: {
@@ -177,21 +199,40 @@
             {id: 'full', label: 'Fulltext', type: 'string',
                 operators: multiTokenOperators},
             {id: 'function', label: 'Function', type: 'string',
-                operators: functionOperators},
+                operators: functionOperators,
+                input: function($rule, filter) {
+
+                    return createFunctionInputs(this, [
+                        {id: $rule.attr('id'), label: 'function', type: 'text', placeholder: 'hidden target'},
+                        {id: 'any-query', label: 'function', type: 'text', placeholder: '(any valid query)'},
+                        {id: 'any-number', label: 'function', type: 'number', placeholder: '(any valid query)'}
+                    ]);
+
+                }},
             {id: 'f_pos', label: 'Match by Position()', type: 'string',
                 operators: functionOperators,
                 input: function($rule, filter) {
-                    var $container = $rule.find('.rule-value-container');
-
-
-
-                    return '\
-      <input type="text" name="xxx" placeholder="author:&quot;Feynman, R&quot;">\
-      start: <input type="text" name="xxx" size="3" placeholder="1">\
-      end (optional): <input type="text" name="xxx" size="3" placeholder="2">\
-      ';
-                }
-            },
+                    return createFunctionInputs(this, [
+                        {id: $rule.attr('id'), label: 'function', type: 'text', placeholder: 'hidden target'},
+                        {id: 'any-query', label: 'function', type: 'text', placeholder: '(any valid query)'},
+                        {id: 'any-number', label: 'function', type: 'number', placeholder: '(any valid query)'},
+                        {
+                            id: 'category',
+                            label: 'Category',
+                            type: 'integer',
+                            input: 'select',
+                            values: {
+                                1: 'Books',
+                                2: 'Movies',
+                                3: 'Music',
+                                4: 'Tools',
+                                5: 'Goodies',
+                                6: 'Clothes'
+                            },
+                            operators: ['in', 'not_in', 'equal', 'not_equal', 'is_null', 'is_not_null']
+                        }
+                    ]);
+                }},
             {id: 'f_citations', label: 'Find Citations()', type: 'string', placeholder: '&lt;any valid query&gt;',
                 operators: functionOperators},
             {id: 'f_references', label: 'Find References()', type: 'string', placeholder: '&lt;any valid query&gt;',
